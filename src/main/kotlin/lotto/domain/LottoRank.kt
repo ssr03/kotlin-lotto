@@ -2,12 +2,14 @@ package lotto.domain
 
 enum class LottoRank(
     val matchCount: Int,
+    val isBonus: Boolean,
     val reward: Long
 ) {
-    FIRST_PLACE(6, 2000000000),
-    SECOND_PLACE(5, 1500000),
-    THIRD_PLACE(4, 50000),
-    FOURTH_PLACE(3, 5000);
+    FIFTH_PLACE(3, false, 5000),
+    FOURTH_PLACE(4, false, 50000),
+    THIRD_PLACE(5, false, 1500000),
+    SECOND_PLACE(5, true, 30000000),
+    FIRST_PLACE(6, false, 2000000000);
 
     companion object {
         private const val DEFAULT_REWARD = 0L
@@ -17,7 +19,9 @@ enum class LottoRank(
                 ?.reward
                 ?: DEFAULT_REWARD
 
-        fun getMatchCountList(): List<Int> =
-            values().map { it.matchCount }
+        fun getLottoRank(matchCount: Int, isBonus: Boolean): LottoRank? =
+            values().firstOrNull {
+                it.matchCount == matchCount && it.isBonus == isBonus
+            }
     }
 }

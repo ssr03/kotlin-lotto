@@ -1,27 +1,35 @@
 package lotto.domain
 
+import lotto.util.ErrorCode
+
 class LottoStatistics(
-    private val winningLotto: Lotto
+    private val winningLotto: Lotto,
+    private val bonusLottoNumber: LottoNumber
 ) {
-    private fun initLottoMatchMap(): Map<Int, LottoMatch> {
-        val lottoMatchMap = mutableMapOf<Int, LottoMatch>()
-        LottoRank.getMatchCountList().forEach { matchCount ->
-            lottoMatchMap[matchCount] =
-                LottoMatch(
-                    matchCount,
-                    LottoRank.getReward(matchCount)
-                )
+    init {
+        require(!winningLotto.containLottoNumber(bonusLottoNumber)) {
+            ErrorCode.BONUS_LOTTO_NUMBER_EXCEPTION.errorMessage
         }
-        return lottoMatchMap
     }
 
-    fun getWinningStatistics(lottoList: List<Lotto>): List<LottoMatch> {
-        val lottoMatchMap = initLottoMatchMap()
+    private fun initLottoMatchList(): List<LottoMatch> =
+        LottoRank.values().map { lottoRank ->
+            LottoMatch(
+                lottoRank = lottoRank
+            )
+        }
 
-        val lottoMatchResult = LottoMatchResult(lottoMatchMap)
+    fun getWinningStatistics(lottoList: List<Lotto>): List<LottoMatch> {
+        val lottoMatchList = initLottoMatchList()
+
+        val lottoMatchResult = LottoMatchResult(lottoMatchList)
+
         lottoList.forEach { lotto ->
             val matchCount = winningLotto.getMatchCount(lotto)
-            lottoMatchResult.setMatchResult(matchCount)
+            val isBonus = lotto.containLottoNumber(bonusLottoNumber)
+            LottoRank.getLottoRank(matchCount, isBonus)?.let { lottoRank ->
+                lottoMatchResult.setMatchResult(lottoRank, isBonus)
+            }
         }
         return lottoMatchResult.getMatchResult()
     }
@@ -29,7 +37,7 @@ class LottoStatistics(
     fun getProfit(totalPrice: Long, lottMatchList: List<LottoMatch>): Double {
         // 총 이득
         val totalReward = lottMatchList.sumOf { lottoMatch ->
-            lottoMatch.matchCount * lottoMatch.reward
+            lottoMatch.matchTotalCount * lottoMatch.lottoRank.reward
         }
 
         val profit = totalReward / totalPrice.toDouble()

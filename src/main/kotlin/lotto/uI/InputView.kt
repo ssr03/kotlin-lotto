@@ -14,4 +14,9 @@ object InputView {
         println(ESCAPE_LINE.plus(MessageCode.INPUT_LAST_WEEK_LOTTO.message))
         return requireNotNull(readLine())
     }
+
+    fun inputBonusLottoNumber(): Int {
+        println(MessageCode.INPUT_BONUS_LOTTO_NUMBER.message)
+        return requireNotNull(readLine()?.toIntOrNull())
+    }
 }

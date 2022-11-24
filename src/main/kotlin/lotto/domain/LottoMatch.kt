@@ -1,11 +1,12 @@
 package lotto.domain
 
 data class LottoMatch(
-    val matchNumber: Int,
-    val reward: Long,
-    var matchCount: Long = DEFAULT_MATCH_COUNT
+    val lottoRank: LottoRank,
+    var matchTotalCount: Long = DEFAULT_MATCH_COUNT,
+    var isBonusNumber: Boolean = DEFAULT_IS_BONUS_NUMBER
 ) {
     companion object {
         const val DEFAULT_MATCH_COUNT = 0L
+        private const val DEFAULT_IS_BONUS_NUMBER = false
     }
 }

@@ -1,17 +1,19 @@
 package lotto.domain
 
 class LottoMatchResult(
-    private val lottoMatchMap: Map<Int, LottoMatch>
+    private val lottoMatchList: List<LottoMatch>
 ) {
 
-    fun setMatchResult(matchNumber: Int) {
-        val lottoMatch = lottoMatchMap[matchNumber]
-        lottoMatch?.let {
-            it.matchCount++
+    fun setMatchResult(lottoRank: LottoRank, isBonus: Boolean) {
+        lottoMatchList.find { lottoMatch ->
+            lottoMatch.lottoRank == lottoRank
+        }?.let {
+            it.matchTotalCount++
+            it.isBonusNumber = isBonus
             it
         }
     }
 
     fun getMatchResult(): List<LottoMatch> =
-        lottoMatchMap.values.toList()
+        lottoMatchList
 }
